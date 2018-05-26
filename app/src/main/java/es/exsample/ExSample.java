@@ -21,6 +21,7 @@ public class ExSample extends AppCompatActivity  {
     Button bt;
     Button bt1;
     TextView tv;
+    TextView tr;
     TextToSpeech tts;
 
 
@@ -31,18 +32,20 @@ public class ExSample extends AppCompatActivity  {
         setContentView(ll);
 
         tv = new TextView(this);
+        tr = new TextView(this);
         bt = new Button(this);
         bt.setText("入力");
         bt1 = new Button(this);
-        bt1.setText("開始");
+        bt1.setText("翻訳");
 
 
         ll.addView(tv);
+        ll.addView(tr);
         ll.addView(bt);
         ll.addView(bt1);
 
         tts = new TextToSpeech(getApplicationContext(),  new SampleInitListener());  //テキストトゥスピーチオブジェクトの生成と、イベントリスナーの登録
-        tts.setLanguage(Locale.JAPANESE);  //読み上げる言語の設定
+        tts.setLanguage(Locale.ENGLISH);  //読み上げる言語の設定
         bt.setOnClickListener(new SampleClickListener());
         bt1.setOnClickListener(new SampleClickListener2());
     }
@@ -59,7 +62,8 @@ public class ExSample extends AppCompatActivity  {
             try{
                 Intent it = new Intent();
                 it.setAction(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);  //音声認識にアクションを設定
-                it.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);  //音声認識の設定
+                it.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.JAPAN.toString());
+                //it.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);  //音声認識の設定
                 it.putExtra(RecognizerIntent.EXTRA_PROMPT, "入力してください。");  //音声認識のプロンプト文字の設定
                 startActivityForResult(it, SAMPLE_APP); //結果を取得するインテントのスタート
             }
@@ -71,7 +75,20 @@ public class ExSample extends AppCompatActivity  {
     }
     class SampleClickListener2 implements OnClickListener{
         public void onClick(View v){
-            String str  = tv.getText().toString();
+            String honyaku = tv.getText().toString();
+            switch (honyaku) {
+                case "おはよう":
+                    tr.setText("good morning");
+                case "こんにちは":
+                    tr.setText("hello");
+                case "こんばんは":
+                    tr.setText("good night");
+                case "この言葉を英語にしてください":
+                    tr.setText("Please change this word to English");
+                default:
+                    tr.setText("hello");
+            }
+            String str = tr.getText().toString();
             String utteranceId = this.hashCode() + "";  //utteranceIdの取得
             if(str != null)
                 tts.speak(str, TextToSpeech.QUEUE_FLUSH, null, utteranceId);  //テキストの読み上げ
@@ -81,5 +98,25 @@ public class ExSample extends AppCompatActivity  {
     class SampleInitListener implements TextToSpeech.OnInitListener {
         public void onInit(int status){}
     }
+
+    /*class Dictionary implements OnClickListener{
+        String honyaku = tv.getText().toString();
+        public void onClick(View v) {
+            switch (honyaku) {
+                case "おはよう":
+                    tr.setText("good morning");
+                case "こんにちは":
+                    tr.setText("hello");
+                case "こんばんは":
+                    tr.setText("good night");
+                case "この言葉を英語にしてください":
+                    tr.setText("Please change this word to English");
+            }
+
+            public static void translation () {
+                String str = tr.getText().toString();
+            }
+        }
+    }*/
 }
 
